@@ -19,7 +19,7 @@ class EpisodeSummaryScraper:
 
     async def _get_soup(self, url: str) -> bs4.BeautifulSoup:
         r = await asyncio.to_thread(requests.get, url)
-        return bs4.BeautifulSoup(r.text, 'html.parser')
+        return bs4.BeautifulSoup(r.text.replace('<br />', ' '), 'html.parser')
 
     async def _season_episode_summaries(self, season: int) -> str:
         url = urllib.parse.urljoin(
