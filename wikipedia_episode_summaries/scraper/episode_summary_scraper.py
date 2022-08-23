@@ -17,6 +17,13 @@ class EpisodeSummaryScraper:
         self.url_pattern = url_pattern
         self.num_seasons = num_seasons
 
+    def _table_of_contents(self) -> str:
+        lines = []
+        for season in range(1, self.num_seasons + 1):
+            lines.append(f'- [Season {season}](#season-{season})')
+        lines.append('___')
+        return '\n'.join(lines) + '\n'
+
     async def _get_soup(self, url: str) -> bs4.BeautifulSoup:
         r = await asyncio.to_thread(requests.get, url)
         return bs4.BeautifulSoup(r.text.replace('<br />', ' '), 'html.parser')
@@ -38,24 +45,23 @@ class EpisodeSummaryScraper:
             episode_line = f'1. **{title_text}** - {summary_text}'
             lines.append(episode_line)
             hr_count = len(ep_num.select('hr'))
-            for i in range(hr_count):
-                lines.append(f'1. **{title_text} (Part {i + 2})**')
-        lines.append('')
-        return '\n'.join(lines)
+            for part in range(2, hr_count + 2):
+                lines.append(f'1. **{title_text} (Part {part})**')
+        return '\n'.join(lines) + '\n'
 
     async def _main(self) -> None:
         show_title = self.url_pattern.partition('_(')[0].replace('_', ' ')
         page_title = '# ' + show_title + ' Episode Summaries'
+        toc = self._table_of_contents()
         scrape_coroutines = (
-            self._season_episode_summaries(i)
-            for i in range(1, self.num_seasons + 1)
+            self._season_episode_summaries(season)
+            for season in range(1, self.num_seasons + 1)
         )
         season_summaries = await asyncio.gather(*scrape_coroutines)
-        joined_summaries = '\n'.join(season_summaries)
         markdown_filename = self.script_path.stem + '.md'
         out_path = self.script_path.with_name(markdown_filename)
         with open(out_path, 'w', encoding='utf-8') as f:
-            f.write(f'{page_title}\n\n{joined_summaries}')
+            f.write('\n'.join([page_title, toc] + season_summaries))
 
     def scrape(self) -> None:
         asyncio.run(self._main())

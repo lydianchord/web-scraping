@@ -1,4 +1,8 @@
 # Golden Kamuy Episode Summaries
+- [Season 1](#season-1)
+- [Season 2](#season-2)
+- [Season 3](#season-3)
+___
 
 ## [Season 1](https://en.wikipedia.org/wiki/Golden_Kamuy_%28season_1%29)
 1. **"Wenkamuy" Transcription: "Wenkamui" (Japanese: ウェンカムイ)** - Saichi "Immortal" Sugimoto, a Russo-Japanese War veteran, pans for gold in Hokkaido to provide for the widow of his dead comrade Toraji. His acquaintance Gotō drunkenly tells him the story of Nopperabo, a man who killed a group of Ainu and stole their trove of gold, hiding its location in a map tattooed across twenty-four escaped prisoners. Sugimoto doubts the story, until a sober Gotō attempts to kill him. In the ensuing fight, Gotō is killed by a bear, and Sugimoto sees Gotō has tattoos like those described in the story. Asirpa, an Ainu girl, and Retar, a Hokkaido wolf, save Sugimoto. Sugimoto tells her the story, and Asirpa reveals that her father was among the Ainu people killed. Sugimoto and Asirpa agree to join forces to find the gold.
