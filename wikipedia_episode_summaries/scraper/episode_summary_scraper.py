@@ -44,17 +44,18 @@ class EpisodeSummaryScraper:
         return '\n'.join(lines)
 
     async def _main(self) -> None:
-        script_name = self.script_path.stem
-        title = '# ' + ' '.join(script_name.split('_')).title()
-        scrape_coroutines = [
+        show_title = self.url_pattern.partition('_(')[0].replace('_', ' ')
+        page_title = '# ' + show_title + ' Episode Summaries'
+        scrape_coroutines = (
             self._season_episode_summaries(i)
             for i in range(1, self.num_seasons + 1)
-        ]
+        )
         season_summaries = await asyncio.gather(*scrape_coroutines)
         joined_summaries = '\n'.join(season_summaries)
-        out_path = self.script_path.with_name(script_name + '.md')
+        markdown_filename = self.script_path.stem + '.md'
+        out_path = self.script_path.with_name(markdown_filename)
         with open(out_path, 'w', encoding='utf-8') as f:
-            f.write(f'{title}\n\n{joined_summaries}')
+            f.write(f'{page_title}\n\n{joined_summaries}')
 
     def scrape(self) -> None:
         asyncio.run(self._main())
