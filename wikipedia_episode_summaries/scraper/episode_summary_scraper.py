@@ -1,5 +1,7 @@
 import asyncio
 import inspect
+import os
+import sys
 import urllib.parse
 from pathlib import Path
 import bs4
@@ -8,15 +10,23 @@ import requests
 
 class EpisodeSummaryScraper:
 
-    def __init__(self, url_pattern: str, num_seasons: int) -> None:
+    def __init__(
+        self,
+        url_pattern: str,
+        num_seasons: int,
+        script_filepath: str = None
+    ) -> None:
         """Initialize an EpisodeSummaryScraper.
 
         url_pattern - portion of the Wikipedia URL after the final '/' with
             '{}' as the season number, e.g., 'Adventure_Time_(season_{})'
         num_seasons - integer number of seasons
+        script_filepath - (optional) path to script, which will be inferred
+            if not provided
         """
-        script_filepath = inspect.stack(0)[1].filename
-        self._script_path = Path(script_filepath)
+        if not script_filepath:
+            script_filepath = inspect.stack(0)[1].filename
+        self.script_filepath = script_filepath
         self.url_pattern = url_pattern
         self.num_seasons = num_seasons
 
@@ -61,8 +71,9 @@ class EpisodeSummaryScraper:
             for season in range(1, self.num_seasons + 1)
         )
         season_summaries = await asyncio.gather(*scrape_coroutines)
-        markdown_filename = self._script_path.stem + '.md'
-        out_path = self._script_path.with_name(markdown_filename)
+        script_path = Path(self.script_filepath)
+        markdown_filename = script_path.stem + '.md'
+        out_path = script_path.with_name(markdown_filename)
         with open(out_path, 'w', encoding='utf-8') as f:
             f.write('\n'.join([page_title, toc] + season_summaries))
 
@@ -71,3 +82,14 @@ class EpisodeSummaryScraper:
         different seasons and write them into a markdown file.
         """
         asyncio.run(self._main())
+
+
+if __name__ == '__main__':
+    try:
+        url_pattern, num_seasons = sys.argv[1:3]
+        filepath = os.path.join(os.getcwd(), 'episode_summaries')
+        EpisodeSummaryScraper(url_pattern, int(num_seasons), filepath).scrape()
+    except ValueError:
+        sys.exit(
+            'Usage: python episode_summary_scraper.py url_pattern num_seasons'
+        )
